@@ -23,6 +23,11 @@ app.use(cookieParser());
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
+// Root route - serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Admin route (no auth required)
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
