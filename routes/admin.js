@@ -96,6 +96,28 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
+// Delete user (no auth)
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Delete all recordings associated with this user
+    await Recording.deleteMany({ userId: req.params.id });
+
+    // Delete the user
+    await User.deleteOne({ _id: req.params.id });
+
+    res.json({ msg: 'User and associated recordings deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ msg: 'Server error', error: error.message });
+  }
+});
+
 // Get all recordings (no auth)
 router.get('/recordings', async (req, res) => {
   try {
