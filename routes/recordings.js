@@ -138,5 +138,39 @@ router.get('/user/:userId', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// Delete recording (user can delete their own recordings)
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const recording = await Recording.findById(req.params.id);
+    
+    if (!recording) {
+      return res.status(404).json({ message: 'Recording not found' });
+    }
+    
+    // Check if the recording belongs to the user
+    if (recording.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this recording' });
+    }
+    
+    // Delete from Cloudinary if it exists
+    if (useCloudinary && recording.cloudinaryId) {
+      try {
+        await cloudinary.uploader.destroy(recording.cloudinaryId, { resource_type: 'video' });
+      } catch (cloudinaryError) {
+        console.error('Failed to delete from Cloudinary:', cloudinaryError);
+        // Continue with database deletion even if Cloudinary deletion fails
+      }
+    }
+    
+    // Delete from database
+    await Recording.deleteOne({ _id: req.params.id });
+    
+    res.json({ message: 'Recording deleted successfully' });
+  } catch (error) {
+    console.error('Delete recording error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 module.exports = router;
 

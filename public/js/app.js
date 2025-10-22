@@ -348,9 +348,35 @@ function displayUserRecordings(recordings) {
             </div>
             <div class="recording-actions">
                 <audio controls src="${recording.cloudinaryUrl || `/uploads/${recording.filename}`}"></audio>
+                <button class="btn btn-danger" onclick="deleteRecording('${recording._id}')">Delete</button>
             </div>
         </div>
     `).join('');
+}
+
+// Delete recording
+async function deleteRecording(recordingId) {
+    if (!confirm('Are you sure you want to delete this recording?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/recordings/${recordingId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            showMessage('Recording deleted successfully', 'success');
+            loadUserRecordings(); // Reload the recordings list
+        } else {
+            const data = await response.json();
+            showMessage(data.message || 'Failed to delete recording', 'error');
+        }
+    } catch (error) {
+        console.error('Failed to delete recording:', error);
+        showMessage('Failed to delete recording', 'error');
+    }
 }
 
 // Admin Functions

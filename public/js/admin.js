@@ -77,6 +77,9 @@ function displayUsers(users) {
                 <button class="btn btn-secondary" onclick="editUser('${user._id}')">
                     Edit
                 </button>
+                <button class="btn btn-danger" onclick="deleteUser('${user._id}', '${user.email}')">
+                    Delete
+                </button>
             </div>
         </div>
     `).join('');
@@ -197,6 +200,30 @@ async function editUser(userId) {
         }
     } catch (error) {
         console.error('Failed to load user:', error);
+    }
+}
+
+// Delete user
+async function deleteUser(userId, userEmail) {
+    if (!confirm(`Are you sure you want to delete user "${userEmail}"?\n\nThis will also delete all their recordings.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showMessage('User deleted successfully', 'success');
+            loadUsers(); // Reload the user list
+        } else {
+            const data = await response.json();
+            showMessage(data.msg || 'Failed to delete user', 'error');
+        }
+    } catch (error) {
+        console.error('Failed to delete user:', error);
+        showMessage('Failed to delete user', 'error');
     }
 }
 
