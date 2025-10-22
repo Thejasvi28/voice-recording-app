@@ -38,13 +38,16 @@ app.use('/api/admin', adminRoutes); // No auth required
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
   console.log('Connected to MongoDB');
-  console.log('MongoDB URI:', process.env.MONGODB_URI);
-  console.log('Admin dashboard available at: http://localhost:' + PORT + '/admin (no auth required)');
 })
 .catch((err) => console.error('MongoDB connection error:', err));
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Start server only in development (not in Vercel serverless)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+// Export for Vercel
+module.exports = app;
 
