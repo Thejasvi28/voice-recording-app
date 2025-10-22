@@ -18,6 +18,14 @@ const recordingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  cloudinaryUrl: {
+    type: String,
+    default: null
+  },
+  cloudinaryId: {
+    type: String,
+    default: null
+  },
   size: {
     type: Number,
     required: true

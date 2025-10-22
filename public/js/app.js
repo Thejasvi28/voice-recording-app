@@ -347,7 +347,7 @@ function displayUserRecordings(recordings) {
                 ${recording.duration ? `<p>Duration: ${recording.duration}s</p>` : ''}
             </div>
             <div class="recording-actions">
-                <audio controls src="/uploads/${recording.filename}"></audio>
+                <audio controls src="${recording.cloudinaryUrl || `/uploads/${recording.filename}`}"></audio>
             </div>
         </div>
     `).join('');
@@ -449,7 +449,7 @@ function displayAllRecordings(recordings) {
                 ${recording.duration ? `<p>Duration: ${recording.duration}s</p>` : ''}
             </div>
             <div class="recording-actions">
-                <audio controls src="/uploads/${recording.filename}"></audio>
+                <audio controls src="${recording.cloudinaryUrl || `/uploads/${recording.filename}`}"></audio>
             </div>
         </div>
     `).join('');

@@ -5,37 +5,63 @@ const path = require('path');
 const fs = require('fs');
 const Recording = require('../models/Recording');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Use /tmp directory for Vercel serverless, local uploads for dev
-const uploadsDir = process.env.VERCEL ? '/tmp' : 'uploads';
-
-// Create uploads directory if it doesn't exist (only in local dev)
-if (!process.env.VERCEL) {
-  try {
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir);
-    }
-  } catch (err) {
-    console.error('Could not create uploads directory:', err);
-  }
+// Configure Cloudinary
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
 }
 
-// Configure multer for file upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'recording-' + uniqueSuffix + path.extname(file.originalname));
+// Use Cloudinary for storage if configured, otherwise use local storage
+let storage;
+let useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+
+if (useCloudinary) {
+  // Cloudinary storage
+  storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'voice-recordings',
+      resource_type: 'video', // 'video' resource type is used for audio files in Cloudinary
+      allowed_formats: ['webm', 'wav', 'mp3', 'mpeg', 'ogg', 'm4a'],
+      public_id: (req, file) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        return 'recording-' + uniqueSuffix;
+      }
+    }
+  });
+} else {
+  // Local disk storage (for development)
+  const uploadsDir = 'uploads';
+  if (!fs.existsSync(uploadsDir)) {
+    try {
+      fs.mkdirSync(uploadsDir);
+    } catch (err) {
+      console.error('Could not create uploads directory:', err);
+    }
   }
-});
+  
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, 'recording-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+}
 
 const upload = multer({
   storage: storage,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /audio\/webm|audio\/wav|audio\/mp3|audio\/mpeg|audio\/ogg/;
+    const allowedTypes = /audio\/webm|audio\/wav|audio\/mp3|audio\/mpeg|audio\/ogg|audio\/m4a/;
     const mimetype = allowedTypes.test(file.mimetype);
     if (mimetype) {
       return cb(null, true);
@@ -51,20 +77,29 @@ router.post('/upload', verifyToken, upload.single('audio'), async (req, res) => 
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const recording = await Recording.create({
+    const recordingData = {
       userId: req.user._id,
       filename: req.file.filename,
       originalName: req.file.originalname,
       path: req.file.path,
       size: req.file.size,
       duration: req.body.duration || 0
-    });
+    };
+
+    // If using Cloudinary, save the URL and public ID
+    if (useCloudinary && req.file.path && req.file.filename) {
+      recordingData.cloudinaryUrl = req.file.path; // Cloudinary URL
+      recordingData.cloudinaryId = req.file.filename; // Cloudinary public ID
+    }
+
+    const recording = await Recording.create(recordingData);
 
     res.status(201).json({
       message: 'Recording uploaded successfully',
       recording
     });
   } catch (error) {
+    console.error('Upload error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
