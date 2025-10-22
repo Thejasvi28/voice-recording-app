@@ -6,21 +6,10 @@ const fs = require('fs');
 const Recording = require('../models/Recording');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
 
-// Use /tmp directory in serverless environment (Vercel), local uploads otherwise
-const uploadsDir = process.env.VERCEL ? '/tmp/uploads' : 'uploads';
-
-// Create uploads directory if it doesn't exist (only works locally)
-if (!process.env.VERCEL && !fs.existsSync(uploadsDir)) {
+// Create uploads directory if it doesn't exist
+const uploadsDir = 'uploads';
+if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
-}
-
-// In Vercel, create /tmp/uploads if it doesn't exist
-if (process.env.VERCEL && !fs.existsSync(uploadsDir)) {
-  try {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  } catch (err) {
-    console.error('Could not create uploads directory:', err);
-  }
 }
 
 // Configure multer for file upload
