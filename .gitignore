@@ -4,3 +4,5 @@ uploads/
 *.log
 .vercel
 .DS_Store
+
+.vercel
