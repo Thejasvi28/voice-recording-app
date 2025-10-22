@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recording App</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login/Register Page -->
+        <div id="auth-page" class="page active">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <h1>Voice Recording App</h1>
+                    
+                    <div id="login-form" class="form-section active">
+                        <h2>Login</h2>
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label for="login-email">Email</label>
+                                <input type="email" id="login-email" required placeholder="Enter your email">
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" required placeholder="Enter your password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <p class="form-switch">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+                        </form>
+                    </div>
+
+                    <div id="register-form" class="form-section">
+                        <h2>Register</h2>
+                        <form id="registerForm">
+                            <div class="form-group">
+                                <label for="register-email">Email</label>
+                                <input type="email" id="register-email" required placeholder="Enter your email">
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password">Password</label>
+                                <input type="password" id="register-password" required placeholder="Enter your password">
+                            </div>
+                            <div class="form-group">
+                                <label for="register-confirm-password">Confirm Password</label>
+                                <input type="password" id="register-confirm-password" required placeholder="Confirm your password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                            <p class="form-switch">Already have an account? <a href="#" id="show-login">Login here</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Dashboard -->
+        <div id="user-page" class="page">
+            <nav class="navbar">
+                <div class="navbar-content">
+                    <h1>Voice Recording App</h1>
+                    <div class="nav-right">
+                        <span id="user-email" class="user-email"></span>
+                        <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container">
+                <div class="recording-section">
+                    <h2>Record Your Voice</h2>
+                    <div class="recorder-controls">
+                        <button id="start-recording" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            Start Recording
+                        </button>
+                        <button id="stop-recording" class="btn btn-danger" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="6" width="12" height="12"/>
+                            </svg>
+                            Stop Recording
+                        </button>
+                        <button id="submit-recording" class="btn btn-success" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Submit Recording
+                        </button>
+                    </div>
+                    <div id="recording-status" class="status-message"></div>
+                    <div id="audio-preview"></div>
+                    <div id="recording-timer" class="timer">00:00</div>
+                </div>
+
+                <div class="recordings-section">
+                    <h2>My Recordings</h2>
+                    <div id="user-recordings-list" class="recordings-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-page" class="page">
+            <nav class="navbar">
+                <div class="navbar-content">
+                    <h1>Admin Dashboard</h1>
+                    <div class="nav-right">
+                        <button id="admin-view-toggle" class="btn btn-outline">View Users</button>
+                        <span id="admin-email" class="user-email"></span>
+                        <button id="admin-logout-btn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container">
+                <!-- Recording Section (same as user) -->
+                <div id="admin-recording-section" class="recording-section">
+                    <h2>Record Your Voice</h2>
+                    <div class="recorder-controls">
+                        <button id="admin-start-recording" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            Start Recording
+                        </button>
+                        <button id="admin-stop-recording" class="btn btn-danger" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="6" width="12" height="12"/>
+                            </svg>
+                            Stop Recording
+                        </button>
+                        <button id="admin-submit-recording" class="btn btn-success" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Submit Recording
+                        </button>
+                    </div>
+                    <div id="admin-recording-status" class="status-message"></div>
+                    <div id="admin-audio-preview"></div>
+                    <div id="admin-recording-timer" class="timer">00:00</div>
+                </div>
+
+                <!-- Users Management Section -->
+                <div id="users-section" class="admin-section" style="display: none;">
+                    <div class="section-header">
+                        <h2>User Management</h2>
+                        <button id="create-user-btn" class="btn btn-primary">Create New User</button>
+                    </div>
+                    <div id="users-list" class="users-list"></div>
+                </div>
+
+                <!-- All Recordings Section -->
+                <div id="all-recordings-section" class="admin-section">
+                    <h2>All User Recordings</h2>
+                    <div id="all-recordings-list" class="recordings-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Create/Edit User -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">Create User</h2>
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="modal-email">Email</label>
+                    <input type="email" id="modal-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="modal-password">Password</label>
+                    <input type="password" id="modal-password" required>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="modal-isAdmin">
+                        Is Admin
+                    </label>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-user-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Voice Recording App</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Admin Dashboard (No Auth Required) -->
+        <div id="admin-page" class="page active">
+            <nav class="navbar">
+                <div class="navbar-content">
+                    <h1>Admin Dashboard (Direct Access)</h1>
+                    <div class="nav-right">
+                        <button id="admin-view-toggle" class="btn btn-outline">View Users</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container">
+                <!-- Users Management Section -->
+                <div id="users-section" class="admin-section">
+                    <div class="section-header">
+                        <h2>User Management</h2>
+                        <button id="create-user-btn" class="btn btn-primary">Create New User</button>
+                    </div>
+                    <div id="users-list" class="users-list"></div>
+                </div>
+
+                <!-- All Recordings Section -->
+                <div id="all-recordings-section" class="admin-section" style="display: none;">
+                    <h2>All User Recordings</h2>
+                    <div id="all-recordings-list" class="recordings-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Create/Edit User -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">Create User</h2>
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="modal-email">Email</label>
+                    <input type="email" id="modal-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="modal-password">Password</label>
+                    <input type="password" id="modal-password" required>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="modal-isAdmin">
+                        Is Admin
+                    </label>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-user-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
+
