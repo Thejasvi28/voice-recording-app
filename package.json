@@ -4,7 +4,7 @@
   "description": "Voice recording application with user authentication",
   "main": "server.js",
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "scripts": {
     "start": "node server.js",
